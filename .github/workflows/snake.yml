@@ -1,0 +1,32 @@
+# Draws my contribution graph as a snake, in the profile's colours (dark and
+# light), every day, onto the `output` branch the README shows it from.
+name: Contribution snake
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  snake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake-light.svg?color_snake=#8839ef&color_dots=#ebedf0,#e2d4fb,#c7a9f7,#a77ef0,#8839ef
+            dist/snake-dark.svg?palette=github-dark&color_snake=#c6a0f6&color_dots=#1f2028,#3a3256,#5c4a8f,#8f72d4,#c6a0f6
+
+      - uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
